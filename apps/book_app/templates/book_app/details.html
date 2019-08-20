@@ -1,0 +1,71 @@
+<html>
+<head>
+    <title>Favorite Books</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="{% static '/book_app/css/style.css' %}">
+</head>
+<body>
+    <div class = "wrapper">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                <h1 class="navbar-brand">Welcome, {{ user.first_name }}!</h1>
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                    <li class="nav-item">
+                            <a class = 'nav-link' href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class = 'nav-link' href="favorites">All Favorites</a>
+                        </li>
+                        <li class="nav-item">
+                            <a style = "margin-left: 1000px" class = 'nav-link' href="/logout">Log Out</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class = 'book_section'>
+            {% if book.uploaded_by == user %}
+                <form action = '/books/edit/{{ book.id }}' method = 'post'>
+                    {% csrf_token %}
+                    <input class="form-control" type="text" value = '{{ book.title }}' placeholder="Title" id = "title" name = "title" style = "width: 600px">
+            {% else %}
+                <h1>{{ book.title }}</h1>
+            {% endif %}
+            <p>Added by: {{ book.uploaded_by.first_name }} {{ book.uploaded_by.last_name }}</p>
+            <p>Added on: {{ book.created_at }}</p>
+            <p>Updated on: {{ book.updated_at }}</p>
+            <p style = 'display: inline-block; vertical-align: top'>Description: </p>
+            <div class = 'description_section'>
+                {% if book.uploaded_by == user %}
+                    <textarea class="form-control" id="desc" name = "desc" rows="5" style = 'width: 510px'>{{ book.desc }}</textarea>
+                    <div style = 'text-align: center'>
+                        <button class="btn btn-primary" type="submit" style = "margin-top: 20px">Update</button>
+                        </form>
+                        <form style = 'display: inline-block' action = '/books/delete/{{ book.id }}'>
+                            <button class="btn btn-danger" type="submit" style = "margin-top: 20px">Delete</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <p>{{ book.desc }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class = 'book_section'>
+            <h1>Users who like this book: </h1>
+            <ul>
+                {% for book_user in book.users.all %}
+                    {% if book_user == user %}
+                        <li style = 'display: inline-block'>{{ book_user.first_name }} {{ book_user.last_name }}</li>
+                        <a href = '/books/removeFavorite/{{ book.id }}'>Un-Favorite</a>
+                    {% else %}
+                        <li>{{ book_user.first_name }} {{ book_user.last_name }}</li>   
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% if user not in book.users.all %}
+                <a href = '/books/add/{{ book.id }}'>Add to Favorites</a>
+            {% endif %}
+        </div>
+    </div>
+</body>

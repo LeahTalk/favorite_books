@@ -1,0 +1,10 @@
+.book_section {
+    padding: 50px;
+    display: inline-block;
+    vertical-align: top;
+    width: 700px
+}
+
+.description_section {
+    display: inline-block;
+}
